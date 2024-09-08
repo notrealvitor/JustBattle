@@ -1,0 +1,4 @@
+repository "JustBattle@Devilest@cloud"
+  path "/"
+    br "/main"
+    co "/main"
