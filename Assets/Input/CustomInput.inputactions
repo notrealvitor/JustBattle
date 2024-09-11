@@ -1,0 +1,134 @@
+{
+    "name": "CustomInput",
+    "maps": [
+        {
+            "name": "PlayerInput",
+            "id": "fae04eb9-bfda-4f47-a421-4c0b0a711f37",
+            "actions": [
+                {
+                    "name": "DownArrow",
+                    "type": "Button",
+                    "id": "221eb2c9-fd09-48b7-a5ef-21009133444a",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "LeftArrow",
+                    "type": "Button",
+                    "id": "1278ad5e-76fc-42cb-add7-1a6f031b7e73",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "UpArrow",
+                    "type": "Button",
+                    "id": "2dc7f278-1b9e-4e7e-aa09-a1b50b2aee7d",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "RightArrow",
+                    "type": "Button",
+                    "id": "d4bfc7ed-bea6-4a16-84c3-54710a7ebf50",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "EnterMouse",
+                    "type": "Button",
+                    "id": "8e546367-9a65-46ea-ace4-b3c5291dd8c4",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "CancelMouse",
+                    "type": "Button",
+                    "id": "56f02a8a-75f7-42b8-8487-034d043ce6af",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "65fed2b4-b999-4e00-9d7d-e4181d8b6325",
+                    "path": "<Keyboard>/downArrow",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "DownArrow",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "7c615da6-9eb3-4ec1-bb01-7003cf9fb9a2",
+                    "path": "<Keyboard>/leftArrow",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "LeftArrow",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "44a83ea3-c493-446d-a140-07ba971dbb9d",
+                    "path": "<Keyboard>/upArrow",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "UpArrow",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "36e979cd-51a6-4c32-9046-655366252b76",
+                    "path": "<Keyboard>/rightArrow",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "RightArrow",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "fa633304-8528-45e8-a000-8ddc043017d8",
+                    "path": "<Mouse>/leftButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "EnterMouse",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "2e763ba2-dc50-4496-8b8e-9e8e04031fa7",
+                    "path": "<Mouse>/rightButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "CancelMouse",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": []
+}
