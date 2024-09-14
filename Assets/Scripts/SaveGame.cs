@@ -3,6 +3,7 @@ using System.IO;
 
 public class SaveSystem
 {
+
     private static string savePath = Application.persistentDataPath + "/savegame.json";
 
     // Save player data to a JSON file
@@ -33,5 +34,10 @@ public class SaveSystem
         {
             File.Delete(savePath);
         }
+    }
+
+    public static bool SaveFileExists()
+    {
+        return File.Exists(savePath);
     }
 }

@@ -134,6 +134,7 @@ GameObject:
   - component: {fileID: 22132448}
   - component: {fileID: 22132447}
   - component: {fileID: 22132446}
+  - component: {fileID: 22132449}
   m_Layer: 5
   m_Name: ContinueBTN
   m_TagString: Untagged
@@ -158,7 +159,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -764, y: -15.1}
+  m_AnchoredPosition: {x: -764, y: 128.06}
   m_SizeDelta: {x: 640, y: 120}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &22132446
@@ -207,7 +208,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1586344441}
         m_TargetAssemblyTypeName: GameManager, Assembly-CSharp
-        m_MethodName: LoadGame
+        m_MethodName: ContinueGame
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -255,6 +256,21 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 22132444}
   m_CullTransparentMesh: 1
+--- !u!114 &22132449
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 22132444}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3a9b10d6745c44b42825d5c47c20b25f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  destroyIfTrue: 0
+  className: SaveSystem
+  methodName: SaveFileExists
 --- !u!1 &30550696
 GameObject:
   m_ObjectHideFlags: 0
@@ -516,7 +532,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -764, y: 135.2}
+  m_AnchoredPosition: {x: -764, y: -18.1}
   m_SizeDelta: {x: 640, y: 120}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &339209544
@@ -1134,6 +1150,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ShouldLoadSavedData: 0
   currentState: 0
+  playerSaveData:
+    health: 0
+    maxHealth: 0
+    experience: 0
+    gold: 0
 --- !u!4 &1586344442
 Transform:
   m_ObjectHideFlags: 0
@@ -1379,8 +1400,8 @@ RectTransform:
   m_LocalScale: {x: 0, y: 0, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 339209543}
   - {fileID: 22132445}
+  - {fileID: 339209543}
   - {fileID: 906006128}
   - {fileID: 259267119}
   m_Father: {fileID: 0}
@@ -1447,7 +1468,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'BATTLE!
+  m_text: 'NEW BATTLE!
 
 '
   m_isRightToLeft: 0

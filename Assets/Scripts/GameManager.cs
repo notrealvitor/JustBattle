@@ -7,7 +7,9 @@ public class GameManager : MonoBehaviour
 {
     public enum GameState { StartMenu, NewGame, Continue, GameOver }
     public bool ShouldLoadSavedData;
-        
+
+    public int numberOfFights;
+
     public GameState currentState;
 
     public static GameManager instance; // Singleton instance
@@ -17,6 +19,7 @@ public class GameManager : MonoBehaviour
 
     void Awake()
     {
+        numberOfFights = 1;
         // Implement Singleton pattern
         if (instance == null)
         {
@@ -34,13 +37,14 @@ public class GameManager : MonoBehaviour
         currentState = newState;
         switch (currentState)
         {
-            case GameState.StartMenu:
+            case GameState.StartMenu:                
                 SceneManager.LoadSceneAsync("MainMenu");
                 break;
             case GameState.NewGame:
+                DeleteSaveGame();
                 SceneManager.LoadSceneAsync("BattleScene");
                 break;
-            case GameState.Continue:
+            case GameState.Continue:                
                 SceneManager.LoadSceneAsync("BattleScene");
                 break;
             case GameState.GameOver:
@@ -59,14 +63,12 @@ public class GameManager : MonoBehaviour
 
     public void StartGame()
     {
-        ShouldLoadSavedData = false;
         ChangeState(GameState.NewGame);
     }
 
     public void ContinueGame()
     {
-        ShouldLoadSavedData = true;
-        ChangeState(GameState.NewGame);
+        ChangeState(GameState.Continue);
     }
 
     public void QuitGame()
@@ -77,47 +79,49 @@ public class GameManager : MonoBehaviour
 
     private void InitializePlayerData()
     {
-        characterStatus = FindObjectOfType<CharacterStatus>();
+        if (characterStatus == null) characterStatus = FindObjectOfType<CharacterStatus>();
 
-        if (characterStatus != null)
+        if (characterStatus != null) // if its null we need to create a player save data
         {
-            playerSaveData = SaveSystem.LoadFromFile() ?? new PlayerSaveData(
+            if (playerSaveData == null)
+            {
+                playerSaveData = SaveSystem.LoadFromFile() ?? new PlayerSaveData(
                 characterStatus.GetHealth(),
                 characterStatus.healthMax,
                 characterStatus.experience,
-                999 // Default gold value
-            );
+                999, // Default gold value
+                1    //if there was no saveData then its 0
+                );
+            }
+            else 
+            {
+                playerSaveData.health = characterStatus.GetHealth();
+                playerSaveData.maxHealth = characterStatus.healthMax;
+                playerSaveData.experience = characterStatus.experience;
+                playerSaveData.numberOfFights = numberOfFights;
+            }
             ApplySaveDataToCharacter();
         }
     }
 
     public void SaveGame()
     {
-        if (characterStatus == null) characterStatus = FindObjectOfType<CharacterStatus>();
-        print("trying to save game");
+        InitializePlayerData();
         if (characterStatus != null)
         {
-            print("trying to save game2");
-            playerSaveData.health = characterStatus.GetHealth();
-            playerSaveData.maxHealth = characterStatus.healthMax;
-            playerSaveData.experience = characterStatus.experience;
-
             SaveSystem.SaveToFile(playerSaveData);
-
-            Debug.Log($"Game Saved: Health={playerSaveData.health}, MaxHealth={playerSaveData.maxHealth}, Experience={playerSaveData.experience}, Gold={playerSaveData.gold}");
+            Debug.Log($"Game SAVED: Health={playerSaveData.health}, MaxHealth={playerSaveData.maxHealth}, Experience={playerSaveData.experience}, Gold={playerSaveData.gold}, NumberOfFights={playerSaveData.numberOfFights}");
         }
     }
 
     public void LoadGame()
-    {
-        print("trying to load game");
+    {        
         playerSaveData = SaveSystem.LoadFromFile();
 
         if (playerSaveData != null)
         {
-            print("trying to load game2");
             ApplySaveDataToCharacter();
-            Debug.Log($"Game Saved: Health={playerSaveData.health}, MaxHealth={playerSaveData.maxHealth}, Experience={playerSaveData.experience}, Gold={playerSaveData.gold}");
+            Debug.Log($"Game LOADED: Health={playerSaveData.health}, MaxHealth={playerSaveData.maxHealth}, Experience={playerSaveData.experience}, Gold={playerSaveData.gold}, NumberOfFights={playerSaveData.numberOfFights}");
         }
     }
 
@@ -156,6 +160,11 @@ public class GameManager : MonoBehaviour
             playerSaveData.gold += amount;
             Debug.Log("Added " + amount + " gold. New total: " + playerSaveData.gold);
         }
+    }
+
+    public void OnBattleWon()
+    {
+        numberOfFights++;
     }
 
 }

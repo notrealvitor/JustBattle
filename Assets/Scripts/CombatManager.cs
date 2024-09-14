@@ -114,11 +114,7 @@ public class CombatManager : MonoBehaviour
 
     void SetupBattle()
     {
-        if (gameManager != null)
-        {
-            if (gameManager.ShouldLoadSavedData == true) { gameManager.LoadGame(); }
-            gameManager.ShouldLoadSavedData = true;
-        }
+        if (gameManager != null) gameManager.LoadGame(); //loads the game if there is a save, if it is a NewGame the button will delete the SaveGame object
 
         FindReferences();  // Ensure references are dynamically assigned after scene load
 
@@ -169,13 +165,14 @@ public class CombatManager : MonoBehaviour
     {
         ActionButtons.SetActive(false);
 
-        string message = playerWon ? $"You defeated {enemyStatus.characterName}!" : "You were defeated!";
+        string message = playerWon ? $"You defated {enemyStatus.characterName} on battle {gameManager.numberOfFights} ! " : "You were defeated!";
         string resultScene = playerWon ? "WinScreen" : "LoseScreen";
         string nextScene = playerWon ? "BattleScene" : "MainMenu";
 
 
         if (playerWon && gameManager != null)
         {
+            gameManager.OnBattleWon();
             gameManager.SaveGame();
         }
         else

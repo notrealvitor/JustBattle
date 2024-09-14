@@ -8,7 +8,8 @@ public class CharacterStatus : MonoBehaviour
     [SerializeField] private int health; // Current health (private, not editable in Inspector)
     public int healthMax;               // Max health (editable in Inspector)
     public int damage;                  // Character's base damage
-    public int experience;              
+    public int experience;
+    
 
     [Header("PlayerSettings")]
     public bool isPlayer = false;
