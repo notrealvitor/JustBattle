@@ -5,13 +5,28 @@ using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
-    public enum GameState { StartMenu, NewGame, GameOver }
-
+    public enum GameState { StartMenu, NewGame, Continue, GameOver }
+    public bool ShouldLoadSavedData;
+        
     public GameState currentState;
 
-    void Start()
+    public static GameManager instance; // Singleton instance
+
+    private CharacterStatus characterStatus;  // Reference to CharacterStatus
+    public PlayerSaveData playerSaveData;     // Holds the player's save data
+
+    void Awake()
     {
-        
+        // Implement Singleton pattern
+        if (instance == null)
+        {
+            instance = this; // Set the instance to this instance of the GameManager
+            DontDestroyOnLoad(this.gameObject); // Ensure the GameManager persists across scenes
+        }
+        else
+        {
+            Destroy(gameObject); // Destroy any duplicate GameManager objects
+        }
     }
 
     public void ChangeState(GameState newState)
@@ -23,6 +38,9 @@ public class GameManager : MonoBehaviour
                 SceneManager.LoadSceneAsync("MainMenu");
                 break;
             case GameState.NewGame:
+                SceneManager.LoadSceneAsync("BattleScene");
+                break;
+            case GameState.Continue:
                 SceneManager.LoadSceneAsync("BattleScene");
                 break;
             case GameState.GameOver:
@@ -41,13 +59,103 @@ public class GameManager : MonoBehaviour
 
     public void StartGame()
     {
+        ShouldLoadSavedData = false;
         ChangeState(GameState.NewGame);
     }
 
+    public void ContinueGame()
+    {
+        ShouldLoadSavedData = true;
+        ChangeState(GameState.NewGame);
+    }
 
     public void QuitGame()
     {
         print("quit");
         ChangeState(GameState.GameOver);
     }
+
+    private void InitializePlayerData()
+    {
+        characterStatus = FindObjectOfType<CharacterStatus>();
+
+        if (characterStatus != null)
+        {
+            playerSaveData = SaveSystem.LoadFromFile() ?? new PlayerSaveData(
+                characterStatus.GetHealth(),
+                characterStatus.healthMax,
+                characterStatus.experience,
+                999 // Default gold value
+            );
+            ApplySaveDataToCharacter();
+        }
+    }
+
+    public void SaveGame()
+    {
+        if (characterStatus == null) characterStatus = FindObjectOfType<CharacterStatus>();
+        print("trying to save game");
+        if (characterStatus != null)
+        {
+            print("trying to save game2");
+            playerSaveData.health = characterStatus.GetHealth();
+            playerSaveData.maxHealth = characterStatus.healthMax;
+            playerSaveData.experience = characterStatus.experience;
+
+            SaveSystem.SaveToFile(playerSaveData);
+
+            Debug.Log($"Game Saved: Health={playerSaveData.health}, MaxHealth={playerSaveData.maxHealth}, Experience={playerSaveData.experience}, Gold={playerSaveData.gold}");
+        }
+    }
+
+    public void LoadGame()
+    {
+        print("trying to load game");
+        playerSaveData = SaveSystem.LoadFromFile();
+
+        if (playerSaveData != null)
+        {
+            print("trying to load game2");
+            ApplySaveDataToCharacter();
+            Debug.Log($"Game Saved: Health={playerSaveData.health}, MaxHealth={playerSaveData.maxHealth}, Experience={playerSaveData.experience}, Gold={playerSaveData.gold}");
+        }
+    }
+
+    private void ApplySaveDataToCharacter()
+    {
+        if (characterStatus == null) characterStatus = FindObjectOfType<CharacterStatus>();
+        
+        if (characterStatus != null)
+        {
+            characterStatus.SetHealth(playerSaveData.health);
+            characterStatus.healthMax = playerSaveData.maxHealth;
+            characterStatus.experience = playerSaveData.experience;
+        }
+    }
+
+    public void DeleteSaveGame()
+    {
+        SaveSystem.DeleteSaveFile();
+    }
+
+    public void AddExperience(int amount)
+    {
+        if (playerSaveData != null)
+        {
+            playerSaveData.experience += amount;
+            if (characterStatus != null) characterStatus.experience = playerSaveData.experience; // Update CharacterStatus as well
+            Debug.Log("Added " + amount + " experience. New total: " + playerSaveData.experience);
+        }
+    }
+
+    // New Function: Increase gold
+    public void AddGold(int amount)
+    {
+        if (playerSaveData != null)
+        {
+            playerSaveData.gold += amount;
+            Debug.Log("Added " + amount + " gold. New total: " + playerSaveData.gold);
+        }
+    }
+
 }

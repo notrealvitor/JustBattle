@@ -740,6 +740,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: EnemyPrefab
       objectReference: {fileID: 0}
+    - target: {fileID: 5040968254401315494, guid: e2bae47375df41d458f90c0371b5e58b, type: 3}
+      propertyPath: m_TagString
+      value: Enemy
+      objectReference: {fileID: 0}
+    - target: {fileID: 8356127156695517194, guid: e2bae47375df41d458f90c0371b5e58b, type: 3}
+      propertyPath: m_Name
+      value: CharacterImage
+      objectReference: {fileID: 0}
     - target: {fileID: 8962283955361069574, guid: e2bae47375df41d458f90c0371b5e58b, type: 3}
       propertyPath: m_LocalPosition.x
       value: -5.14
@@ -972,7 +980,7 @@ GameObject:
   - component: {fileID: 1493881137}
   m_Layer: 5
   m_Name: TextNotice
-  m_TagString: Untagged
+  m_TagString: DialogueText
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

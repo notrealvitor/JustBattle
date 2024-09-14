@@ -1,140 +1,136 @@
+using System;
 using UnityEngine;
 using TMPro;
-using UnityEngine.UI; // For UI components like Button
+using UnityEngine.UI;
 using System.Collections;
 using UnityEngine.SceneManagement;
+using Unity.VisualScripting;
+using UnityEngine.XR;
 
 public class CombatManager : MonoBehaviour
 {
-    public static CombatManager instance; // Singleton instance
+    public static CombatManager instance;
 
-    private GameObject player; // Player object
-    private GameObject enemy;  // Enemy object
+    [Header("Database")]
+    public EnemyDatabase enemyDatabase;
 
-    private GameObject playerHUD;  // Reference to the player's HUD
-    private GameObject enemyHUD;   // Reference to the enemy's HUD
+    [HideInInspector]
+    public GameObject playerPrefab;
+    [HideInInspector]
+    public GameObject enemyPrefab;
+    [HideInInspector]
+    public TMP_Text dialogueText;
+    [HideInInspector]
+    public GameObject ActionButtons;
+    [HideInInspector]
+    public Button attackButton;
+    public delegate void OnAttackAction();
+    public event OnAttackAction onAttack;
 
-    private TMP_Text dialogueText; // Dialogue box for text
-    private GameObject ActionButtons; // UI for battle buttons (Attack, Skills, etc.)
-    private Button attackButton; // Attack Button reference
+    [HideInInspector]
+    public GameObject playerHUD;
+    [HideInInspector]
+    public GameObject enemyHUD;
 
-    public EnemyDatabase enemyDatabase; // Public field to manually assign in Inspector
+    [HideInInspector]
+    public CharacterStatus playerStatus;
+    [HideInInspector]
+    public CharacterStatus enemyStatus;
 
-    private CharacterStatus playerStatus;
-    private CharacterStatus enemyStatus;
+    private BattleState currentState;
 
-
-    private bool battleStarted = false;
-    private bool battleEnded = false;  // Flag to track if the battle has ended
+    private GameManager gameManager;
 
     void Awake()
     {
-        // Implementing Singleton pattern to ensure one instance of CombatManager
         if (instance == null)
         {
             instance = this;
-            DontDestroyOnLoad(this.gameObject); // Ensure the CombatManager persists across scenes
+            DontDestroyOnLoad(this.gameObject);
         }
         else
         {
-            Destroy(gameObject); // Destroy duplicate CombatManager instances
+            Destroy(gameObject);
         }
     }
 
     void Start()
     {
+        gameManager = GameObject.FindWithTag("GameManager").GetComponent<GameManager>();
+
+        enemyDatabase.StoreEnemiesFromSheet("EnemiesSheet1");
         SetupBattle();
-        //StartCoroutine(DelayedSetupBattle(0.5f)); // Adding a delay of 0.5 seconds for setup
     }
 
+    void Update()
+    {   
+       if (currentState != null) 
+       {
+       currentState.UpdateState();
+       }
+    }
+
+    // Dynamically assign references using tags
     void FindReferences()
     {
-        // Dynamically assign the GameObjects by name and check for nulls
-        player = GameObject.Find("PlayerPrefab");
-        if (player == null) Debug.LogError("PlayerPrefab not found!");
-
-        enemy = GameObject.Find("EnemyPrefab");
-        if (enemy == null) Debug.LogError("EnemyPrefab not found!");
-
-        dialogueText = GameObject.Find("TextNotice")?.GetComponent<TMP_Text>();
-        if (dialogueText == null) Debug.LogError("TextNotice not found or TMP_Text component is missing!");
-
-        ActionButtons = GameObject.Find("HUD_Buttons");
-        if (ActionButtons == null) Debug.LogError("HUD_Buttons not found!");
-
-        if (ActionButtons != null)
-        {
-            ActionButtons.SetActive(false);
-            // Find the Attack Button as a child of ActionButtons using the correct name "AttackBTN"
-            attackButton = ActionButtons.transform.Find("AttackBTN")?.GetComponent<Button>();
-            if (attackButton == null)
-            {
-                Debug.LogError("AttackBTN not found or missing Button component!");
-            }
-            else
-            {
-                attackButton.onClick.AddListener(PlayerAttack); // Dynamically add the PlayerAttack function
-            }
-        }
-
-        // Get the CharacterStatus from the player and enemy GameObjects
-        if (player != null)
-        {
-            playerStatus = player.GetComponent<CharacterStatus>();
-            if (playerStatus == null) Debug.LogError("CharacterStatus component not found on PlayerPrefab!");
-        }
-
-        if (enemy != null)
-        {
-            enemyStatus = enemy.GetComponent<CharacterStatus>();
-            if (enemyStatus == null) Debug.LogError("CharacterStatus component not found on EnemyPrefab!");
-        }
-
-        // Find PlayerHUD and EnemyHUD as UI elements
-        playerHUD = GameObject.Find("PlayerHUD");
-        enemyHUD = GameObject.Find("EnemyHUD");
-
-        // If they are part of a Canvas or not found via GameObject.Find, try FindObjectsOfType for UI elements
-        if (playerHUD == null)
-        {
-            playerHUD = GameObject.FindObjectOfType<Canvas>().transform.Find("PlayerHUD")?.gameObject;
-        }
-        if (enemyHUD == null)
-        {
-            enemyHUD = GameObject.FindObjectOfType<Canvas>().transform.Find("EnemyHUD")?.gameObject;
-        }
+        playerPrefab = GameObject.FindWithTag("Player");
+        enemyPrefab = GameObject.FindWithTag("Enemy");
+        dialogueText = GameObject.FindWithTag("DialogueText")?.GetComponent<TMP_Text>();
+        ActionButtons = GameObject.FindWithTag("ActionButtons");
+        playerHUD = GameObject.FindObjectOfType<Canvas>().transform.Find("PlayerHUD")?.gameObject;
+        enemyHUD = GameObject.FindObjectOfType<Canvas>().transform.Find("EnemyHUD")?.gameObject;
 
         // Check for nulls to avoid issues
         if (playerHUD == null) Debug.LogError("Player CharacterHUD not found!");
         if (enemyHUD == null) Debug.LogError("Enemy CharacterHUD not found!");
+
+        // Get CharacterStatus components
+        if (playerPrefab != null)
+        {
+            playerStatus = playerPrefab.GetComponent<CharacterStatus>();
+        }
+
+        if (enemyPrefab != null)
+        {
+            enemyStatus = enemyPrefab.GetComponent<CharacterStatus>();
+        }
+
+        // Assign attack button
+        if (ActionButtons != null)
+        {
+            attackButton = ActionButtons.transform.Find("AttackBTN")?.GetComponent<Button>();
+            if (attackButton != null)
+            {
+                attackButton.onClick.RemoveAllListeners(); // Clear previous listeners
+                attackButton.onClick.AddListener(() => onAttack?.Invoke());
+            }
+        }
     }
 
-    IEnumerator DelayedSetupBattle(float delay)
+    public void ClearOnAttackEvent()
     {
-        yield return new WaitForSeconds(delay); // Wait for the specified delay time
-        SetupBattle();
+        onAttack = null; // This is allowed inside the class that declares the event
     }
 
     void SetupBattle()
     {
-        // Find the references after the scene is loaded
-        FindReferences();
+        if (gameManager != null)
+        {
+            if (gameManager.ShouldLoadSavedData == true) { gameManager.LoadGame(); }
+            gameManager.ShouldLoadSavedData = true;
+        }
 
-        // Ensure battle flags are set correctly
-        battleStarted = false;
-        battleEnded = false;
+        FindReferences();  // Ensure references are dynamically assigned after scene load
 
-        // Get a random enemy from the enemy database
-        EnemyData randomEnemy = enemyDatabase.GetRandomEnemy();
-
-        // Set up enemy's stats and image using CharacterStatus
-        enemyStatus.SetupCharacter(randomEnemy.enemyName, randomEnemy.enemySprite, randomEnemy.healthMax, randomEnemy.damage);
-
-        enemy.SetActive(true); // Activate the enemy in the scene
+        SetupEnemy();
+        SetupPlayer();
 
         if (dialogueText != null)
         {
-            dialogueText.text = $"A {randomEnemy.enemyName} appeared!";
+            BattleTextManager.Instance.DisplayMessageForSeconds($"A {enemyStatus.characterName} appeared!", 1.0f, () =>
+            {
+                SetState(new PlayerTurnState(this));
+            });
         }
 
         if (ActionButtons != null)
@@ -143,140 +139,101 @@ public class CombatManager : MonoBehaviour
         }
     }
 
-    void Update()
+    void SetupEnemy()
     {
-        // Wait for any input to start the battle
-        if (!battleStarted && !battleEnded && Input.anyKeyDown)
+        EnemyData randomEnemy = enemyDatabase.GetRandomStoredEnemy();
+        if (randomEnemy == null)
         {
-            StartBattle();
+            Debug.LogError("No enemy data available!");
+            return;
         }
 
-        // If the battle has ended and any key is pressed, load the next battle
-        if (battleEnded && Input.anyKeyDown)
-        {
-            StartCoroutine(ReloadBattleScene());
-        }
+        enemyStatus.SetupCharacter(randomEnemy.enemyName, randomEnemy.enemySprite, randomEnemy.healthMax, randomEnemy.damage);
+        enemyPrefab.SetActive(true);
     }
 
-    void StartBattle()
+    void SetupPlayer()
     {
-        if (dialogueText != null)
-        {
-            dialogueText.text = "Choose your action.";
-        }
-
-        if (ActionButtons != null)
-        {
-            ActionButtons.SetActive(true); // Show battle UI (buttons)
-        }
-
-        // Activate the player's and enemy's HUDs
-        if (playerHUD != null)
-        {
-            playerHUD.SetActive(true);
-        }
-
-        if (enemyHUD != null)
-        {
-            enemyHUD.SetActive(true);
-        }
-
-        battleStarted = true;
-    }
-    public void PlayerAttack()
-    {
-        // Don't allow actions if the battle has ended
-        if (battleEnded) return;
-
-        // Player attacks the enemy, dealing damage
-        enemyStatus.TakeDamage(playerStatus.damage);
-
-        if (dialogueText != null)
-        {
-            dialogueText.text = $"You attacked {enemyStatus.characterName} for {playerStatus.damage} damage!";
-        }
-
-        // Check if the enemy is dead
-        if (enemyStatus.IsDead())
-        {
-            EndBattle(true); // Player wins
-        }
-        else
-        {
-            // Wait before switching to enemy turn
-            StartCoroutine(EnemyTurn());
-        }
+        playerHUD.SetActive(true);
+        enemyHUD.SetActive(true);
     }
 
-    IEnumerator EnemyTurn()
+    public void EnemyTakeDamage(int damage)
     {
-        // Don't proceed with the enemy turn if the battle has ended
-        if (battleEnded) yield break;
+        enemyStatus.TakeDamage(damage);
+        dialogueText.text = $"You attacked {enemyStatus.characterName} for {damage} damage!";
 
-        dialogueText.text = $"{enemyStatus.characterName} turn!";
+    }
 
+    public void EndBattle(bool playerWon)
+    {
         ActionButtons.SetActive(false);
 
-        yield return new WaitForSeconds(1); // Wait a second before enemy attacks
+        string message = playerWon ? $"You defeated {enemyStatus.characterName}!" : "You were defeated!";
+        string resultScene = playerWon ? "WinScreen" : "LoseScreen";
+        string nextScene = playerWon ? "BattleScene" : "MainMenu";
 
-        if (dialogueText != null)
+
+        if (playerWon && gameManager != null)
         {
-            dialogueText.text = $"{enemyStatus.characterName} attacks!";
-        }
-
-        playerStatus.TakeDamage(enemyStatus.damage);
-
-        if (dialogueText != null)
-        {
-            dialogueText.text = $"{enemyStatus.characterName} dealt {enemyStatus.damage} damage!";
-        }
-
-        // Check if the player is dead
-        if (playerStatus.IsDead())
-        {
-            EndBattle(false); // Player loses
+            gameManager.SaveGame();
         }
         else
         {
-            yield return new WaitForSeconds(1);
-            StartPlayerTurn(); // Start player turn again
-        }
-    }
-
-    void StartPlayerTurn()
-    {
-        if (dialogueText != null)
-        {
-            dialogueText.text = "Your turn!";
+            gameManager.DeleteSaveGame();
         }
 
-        if (ActionButtons != null)
+        StartCoroutine(LoadSceneAndPerformAction(resultScene, () =>
         {
-            ActionButtons.SetActive(true); // Re-enable player action buttons
-        }
-    }
-
-    void EndBattle(bool playerWon)
-    {
-        // Set battleEnded flag to prevent further actions
-        battleEnded = true;
-
-        if (ActionButtons != null)
-        {
-            ActionButtons.SetActive(false);
-        }
-
-        if (playerWon)
-        {
-            StartCoroutine(LoadSceneAndShowText("WinScreen", $"You defeated {enemyStatus.characterName}!"));
-        }
-        else
-        {
-            StartCoroutine(LoadSceneAndShowText("LoseScreen", "You were defeated!"));
-        }
+            BattleTextManager.Instance.DisplayMessageWithInput(message, () =>
+            {
+                if (playerWon)
+                {
+                    gameManager.AddGold(10); //this goes straight to the saveGame
+                    BattleTextManager.Instance.DisplayMessageForSeconds("You won 10 gold!", 1,() =>
+                    {
+                        gameManager.AddExperience(5); //this goes straight to the saveGame
+                        BattleTextManager.Instance.DisplayMessageForSeconds("You won 5 experience!", 1, () =>
+                        {
+                            StartCoroutine(LoadSceneAndPerformAction(nextScene, () =>
+                            {
+                                SetupBattle();
+                            }));
+                        });
+                    });
+                }
+                else
+                    StartCoroutine(LoadSceneAndPerformAction(nextScene, () =>
+                    {
+                        DestroyAllDontDestroyOnLoadObjects();
+                    }));
+            });
+        }));
     }
 
     IEnumerator LoadSceneAndShowText(string sceneName, string message)
+    {
+        AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(sceneName);
+
+        while (!asyncLoad.isDone)
+        {
+            yield return null;
+        }
+
+        BattleTextManager.Instance.DisplayMessageForSeconds(message, 1.0f, () =>
+        {
+            //need to load a level here and after loading need to run an action, just like in the previous one so maybe we can make a function that would be a fit for both cases
+        });
+    }
+
+
+    public void SetState(BattleState newState)
+    {
+        currentState = newState;
+        currentState.EnterState();
+    }
+
+    public IEnumerator LoadSceneAndPerformAction(string sceneName, Action afterSceneLoadAction)
     {
         // Load the scene asynchronously
         AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(sceneName);
@@ -287,27 +244,19 @@ public class CombatManager : MonoBehaviour
             yield return null;
         }
 
-        // Once the scene is loaded, update the dialogue text
-        TMP_Text newDialogueText = GameObject.Find("TextNotice").GetComponent<TMP_Text>(); // Ensure this is the correct name
-
-        if (newDialogueText != null)
-        {
-            newDialogueText.text = message;
-        }
+        // After the scene has loaded, execute the action
+        afterSceneLoadAction?.Invoke();
     }
 
-    IEnumerator ReloadBattleScene()
+    public void DestroyAllDontDestroyOnLoadObjects() //need to add the DontDestroyOnLoadTag in the object
     {
-        // Reload the BattleScene asynchronously
-        AsyncOperation asyncLoad = SceneManager.LoadSceneAsync("BattleScene"); // Replace "BattleScene" with the actual scene name
+        // Find all objects tagged with "DontDestroyOnLoad"
+        GameObject[] dontDestroyObjects = GameObject.FindGameObjectsWithTag("DontDestroyOnLoad");
 
-        // Wait for the scene to fully load
-        while (!asyncLoad.isDone)
+        // Loop through and destroy each object
+        foreach (GameObject obj in dontDestroyObjects)
         {
-            yield return null;
+            Destroy(obj);
         }
-
-        // After the scene is loaded, set up the battle again
-        StartCoroutine(DelayedSetupBattle(0.5f)); // Optional delay for setting up the next battle
     }
 }

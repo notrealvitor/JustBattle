@@ -1,3 +1,6 @@
+
+ 
+
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "EnemyData", menuName = "Enemies/EnemyData")]

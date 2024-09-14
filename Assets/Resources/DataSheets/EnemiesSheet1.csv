@@ -1,0 +1,4 @@
+NAME,HEALTHMAX,DAMAGE,IMAGE
+Slime,50,5,T_E_Slime
+Goblin,30,10,T_E_YoungGoblin
+Test,100,4,T_E_Test

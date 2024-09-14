@@ -8,6 +8,7 @@ public class CharacterStatus : MonoBehaviour
     [SerializeField] private int health; // Current health (private, not editable in Inspector)
     public int healthMax;               // Max health (editable in Inspector)
     public int damage;                  // Character's base damage
+    public int experience;              
 
     [Header("PlayerSettings")]
     public bool isPlayer = false;
@@ -33,7 +34,7 @@ public class CharacterStatus : MonoBehaviour
         {
             HUD_CharacterName = characterHUDPrefab.transform.Find("HUD_CharName").GetComponent<TMP_Text>();
             HUD_CharacterHealth = characterHUDPrefab.transform.Find("HUD_CharHealth").GetComponent<TMP_Text>();
-            characterHUDPrefab.SetActive(false);
+            
         }
 
         if (isPlayer)
@@ -94,6 +95,19 @@ public class CharacterStatus : MonoBehaviour
 
         // Update the HUD after damage is applied
         UpdateHUD();
+    }
+
+    // Setter function for health
+    public void SetHealth(int newHealth)
+    {
+        health = Mathf.Clamp(newHealth, 0, healthMax); // Ensure health is within valid range
+        UpdateHUD(); // Update UI after setting health
+    }
+
+    // Getter function for health
+    public int GetHealth()
+    {
+        return health;
     }
 
     // Checks if the character is dead

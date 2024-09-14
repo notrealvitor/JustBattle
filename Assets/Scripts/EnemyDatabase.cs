@@ -4,12 +4,28 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "EnemyDatabase", menuName = "Enemies/EnemyDatabase")]
 public class EnemyDatabase : ScriptableObject
 {
-    public List<EnemyData> enemies; // List of all available enemies
+    public EnemyData[] storedEnemies; // Array to store enemies
 
-    // Function to get a random enemy
-    public EnemyData GetRandomEnemy()
+    // Function to store enemies from a CSV sheet into the array
+    public void StoreEnemiesFromSheet(string sheetName)
     {
-        int randomIndex = Random.Range(0, enemies.Count);
-        return enemies[randomIndex];
+        // Load enemy data from the specified CSV file using DataSheetsHandling
+        List<EnemyData> loadedEnemies = DataSheetsHandling.LoadEnemyDataFromCSV(sheetName);
+
+        // Store the enemies in the array
+        storedEnemies = loadedEnemies.ToArray();
+    }
+
+    // Function to get a random enemy from the stored array
+    public EnemyData GetRandomStoredEnemy()
+    {
+        if (storedEnemies == null || storedEnemies.Length == 0)
+        {
+            Debug.LogError("No enemies are stored in the database!");
+            return null;
+        }
+
+        int randomIndex = Random.Range(0, storedEnemies.Length);
+        return storedEnemies[randomIndex];
     }
 }
