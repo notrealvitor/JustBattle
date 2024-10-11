@@ -7,10 +7,12 @@ public class EnemyTurnState : BattleState
 
     public override void EnterState()
     {
-            BattleTextManager.Instance.DisplayMessage($"{combatManager.enemyStatus.characterName} is attacking!");
-            combatManager.ActionButtons.SetActive(false); // Hide buttons during enemy turn
-            combatManager.StartCoroutine(EnemyAction());
-            BattleTextManager.Instance.ClearMessage();
+        Debug.Log("EnterState EnemyTurn");
+        BattleTextManager.Instance.DisplayMessage($"{combatManager.enemyStatus.characterName} is attacking!");
+        combatManager.StartCoroutine(EnemyAction());
+        BattleTextManager.Instance.ClearMessage();
+        UIManager.instance.HideActionButtons();
+        UIManager.instance.HideActionsList();
     }
 
     public override void UpdateState() { }
@@ -18,22 +20,23 @@ public class EnemyTurnState : BattleState
     IEnumerator EnemyAction()
     {
         yield return new WaitForSeconds(1); // Wait before enemy attacks
-
-        BattleTextManager.Instance.DisplayMessageAndWaitEffect($"{combatManager.enemyStatus.characterName} attacks!", ParticleEffectUtility.PlayParticleEffect("PS_ParticleTest"), () =>
-        {
-            combatManager.playerStatus.TakeDamage(combatManager.enemyStatus.damage);
-            BattleTextManager.Instance.DisplayMessageForSeconds(combatManager.playerStatus.characterName + " have suffered " + combatManager.enemyStatus.damage + " damage.", 1.0f, () =>
+        // Use PerformAttack method in CombatManager to handle the enemy attack
+        combatManager.PerformAttack(
+            combatManager.enemyStatus,  // Attacker
+            combatManager.playerStatus, // Target
+            $"{combatManager.enemyStatus.characterName} attacksxx!",  // Attack message
+            () =>
             {
+                // Callback after the attack: Check if player is dead or continue to the player's turn
                 if (combatManager.playerStatus.IsDead())
                 {
                     combatManager.EndBattle(false); // Player loses
                 }
                 else
                 {
-                    combatManager.SetState(new PlayerTurnState(combatManager)); // Back to player's turn
+                    combatManager.SetState(new PlayerTurnState(combatManager)); // Switch back to player's turn
                 }
-            });
-
-        });
+            }
+        );
     }
 }

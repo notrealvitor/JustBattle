@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
@@ -12,14 +13,22 @@ public class GameManager : MonoBehaviour
 
     public GameState currentState;
 
-    public static GameManager instance; // Singleton instance
+    public static GameManager instance;         // Singleton instance
 
-    private CharacterStatus characterStatus;  // Reference to CharacterStatus
-    public PlayerSaveData playerSaveData;     // Holds the player's save data
+    private CharacterStatus playerStatus;       // Reference to CharacterStatus
+    public PlayerData playerSaveData;           // Holds the player's save data
+
+    private Button startButton;
+    private Button continueButton;
+    private Button settingsButton;
+    private Button quitButton;
+
 
     void Awake()
     {
         numberOfFights = 1;
+        SetMainMenuButtons();
+
         // Implement Singleton pattern
         if (instance == null)
         {
@@ -30,21 +39,22 @@ public class GameManager : MonoBehaviour
         {
             Destroy(gameObject); // Destroy any duplicate GameManager objects
         }
+
     }
 
-    public void ChangeState(GameState newState)
+    public void ChangeState(GameState newState) // load scenes
     {
         currentState = newState;
         switch (currentState)
         {
-            case GameState.StartMenu:                
+            case GameState.StartMenu:
                 SceneManager.LoadSceneAsync("MainMenu");
                 break;
             case GameState.NewGame:
                 DeleteSaveGame();
                 SceneManager.LoadSceneAsync("BattleScene");
                 break;
-            case GameState.Continue:                
+            case GameState.Continue:
                 SceneManager.LoadSceneAsync("BattleScene");
                 break;
             case GameState.GameOver:
@@ -61,14 +71,47 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    public void SetMainMenuButtons()
+    {
+        // Find the Canvas in the scene and then locate buttons inside it
+        Canvas canvas = GameObject.FindObjectOfType<Canvas>(); // Finds the active Canvas in the scene
+        if (canvas != null)
+        {
+            startButton = canvas.transform.Find("StartBTN")?.GetComponent<Button>();
+            continueButton = canvas.transform.Find("ContinueBTN")?.GetComponent<Button>();
+            settingsButton = canvas.transform.Find("SettingsBTN")?.GetComponent<Button>();
+            quitButton = canvas.transform.Find("QuitBTN")?.GetComponent<Button>();
+        }
+
+        // Assign actions to buttons
+        if (startButton != null)
+            startButton.onClick.AddListener(StartGame);
+
+        if (continueButton != null)
+            continueButton.onClick.AddListener(ContinueGame);
+
+        if (settingsButton != null)
+            settingsButton.onClick.AddListener(OpenSettings);
+
+        if (quitButton != null)
+            quitButton.onClick.AddListener(QuitGame);
+    }
+
     public void StartGame()
     {
         ChangeState(GameState.NewGame);
+        
     }
 
     public void ContinueGame()
     {
         ChangeState(GameState.Continue);
+        
+    }
+
+    public void OpenSettings()
+    {        
+
     }
 
     public void QuitGame()
@@ -77,63 +120,72 @@ public class GameManager : MonoBehaviour
         ChangeState(GameState.GameOver);
     }
 
+    // Initialization
+    // Initialization
     private void InitializePlayerData()
     {
-        if (characterStatus == null) characterStatus = FindObjectOfType<CharacterStatus>();
+        if (playerStatus == null) playerStatus = GameObject.FindWithTag("Player")?.GetComponent<CharacterStatus>();
 
-        if (characterStatus != null) // if its null we need to create a player save data
+        if (playerStatus != null)
         {
+            // If no save data, create new PlayerData based on current CharacterStatus
             if (playerSaveData == null)
             {
-                playerSaveData = SaveSystem.LoadFromFile() ?? new PlayerSaveData(
-                characterStatus.GetHealth(),
-                characterStatus.healthMax,
-                characterStatus.experience,
-                999, // Default gold value
-                1    //if there was no saveData then its 0
-                );
+                //playerSaveData = SaveSystem.LoadFromFile() ?? new PlayerData(
+                //    playerStatus.experience,
+                //    999, // Default gold value, this should be set when monetization is done
+                //    2, // Current number of fights, should start at two because if it is saved means one fight was already won
+                //    playerStatus.charCharacterData // Reference the player's CharacterData
+                //);
+
+                //ApplySaveDataToCharacter();
             }
-            else 
+            else
             {
-                playerSaveData.health = characterStatus.GetHealth();
-                playerSaveData.maxHealth = characterStatus.healthMax;
-                playerSaveData.experience = characterStatus.experience;
+                // Update save data with the latest player stats
+                playerSaveData.experience = playerStatus.experience;
                 playerSaveData.numberOfFights = numberOfFights;
+                playerSaveData.playerCharacterData = playerStatus.charCharacterData;
             }
-            ApplySaveDataToCharacter();
+
+            //ApplySaveDataToCharacter(); isnt that in the load only?
         }
     }
 
     public void SaveGame()
     {
         InitializePlayerData();
-        if (characterStatus != null)
+        if (playerStatus != null)
         {
             SaveSystem.SaveToFile(playerSaveData);
-            Debug.Log($"Game SAVED: Health={playerSaveData.health}, MaxHealth={playerSaveData.maxHealth}, Experience={playerSaveData.experience}, Gold={playerSaveData.gold}, NumberOfFights={playerSaveData.numberOfFights}");
+            Debug.Log($"Game SAVED: Health={playerSaveData.playerCharacterData.health}, Experience={playerSaveData.experience}, Gold={playerSaveData.gold}, NumberOfFights={playerSaveData.numberOfFights}");
         }
     }
 
     public void LoadGame()
-    {        
+    {
         playerSaveData = SaveSystem.LoadFromFile();
-
+        Debug.Log("loading game!");
         if (playerSaveData != null)
         {
             ApplySaveDataToCharacter();
-            Debug.Log($"Game LOADED: Health={playerSaveData.health}, MaxHealth={playerSaveData.maxHealth}, Experience={playerSaveData.experience}, Gold={playerSaveData.gold}, NumberOfFights={playerSaveData.numberOfFights}");
+            Debug.Log($"Game LOADED: Health={playerSaveData.playerCharacterData.health}, Experience={playerSaveData.experience}, Gold={playerSaveData.gold}, NumberOfFights={playerSaveData.numberOfFights}");
         }
     }
 
     private void ApplySaveDataToCharacter()
     {
-        if (characterStatus == null) characterStatus = FindObjectOfType<CharacterStatus>();
-        
-        if (characterStatus != null)
+        if (playerStatus == null) playerStatus = FindObjectOfType<CharacterStatus>();
+
+        if (playerStatus != null)
         {
-            characterStatus.SetHealth(playerSaveData.health);
-            characterStatus.healthMax = playerSaveData.maxHealth;
-            characterStatus.experience = playerSaveData.experience;
+            // Apply save data to the CharacterStatus
+            playerStatus.experience = playerSaveData.experience;
+            numberOfFights = playerSaveData.numberOfFights;
+            //could get the gold here
+
+            playerStatus.charCharacterData = playerSaveData.playerCharacterData;
+            playerStatus.LoadCharacterData();
         }
     }
 
@@ -147,7 +199,7 @@ public class GameManager : MonoBehaviour
         if (playerSaveData != null)
         {
             playerSaveData.experience += amount;
-            if (characterStatus != null) characterStatus.experience = playerSaveData.experience; // Update CharacterStatus as well
+            if (playerStatus != null) playerStatus.experience = playerSaveData.experience; // Update CharacterStatus as well
             Debug.Log("Added " + amount + " experience. New total: " + playerSaveData.experience);
         }
     }
@@ -165,6 +217,12 @@ public class GameManager : MonoBehaviour
     public void OnBattleWon()
     {
         numberOfFights++;
+        SaveGame();
     }
 
+    public void OnBattleLost()
+    {
+        //numberOfFights = 1; I dont think we need to set this since it will be deleted anyway
+        DeleteSaveGame();
+    }
 }

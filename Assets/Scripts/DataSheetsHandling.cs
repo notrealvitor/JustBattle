@@ -1,13 +1,15 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
+using Unity.VisualScripting;
+using Unity.VisualScripting.FullSerializer;
 
 public static class DataSheetsHandling
 {
-    // Function to load enemy data from a CSV and return a list of EnemyData
-    public static List<EnemyData> LoadEnemyDataFromCSV(string fileName)
+    // Function to load enemy data from a CSV and return a list of CharacterData
+    public static List<CharacterData> LoadEnemyDataFromCSV(string fileName)
     {
-        List<EnemyData> enemyList = new List<EnemyData>();
+        List<CharacterData> enemyList = new List<CharacterData>();
 
         // Construct the file path relative to the Resources/DataSheets folder
         string fullPath = "DataSheets/" + fileName;
@@ -33,26 +35,33 @@ public static class DataSheetsHandling
                 string[] data = line.Split(',');
 
                 // Parse enemy data
-                string name = data[0];
-                int healthMax = int.Parse(data[1]);
-                int damage = int.Parse(data[2]);
-                string spriteFileName = data[3].Trim();  // Trim any whitespace
+                string name = data[0];                
+                string spriteFileName = data[1].Trim(); // Enemy sprite image
+                string baseStat = data[2]; // Base stat: STR, DEX, INT
+                int abilityLevel = int.Parse(data[3]); // Ability level
+                string description = data[4]; // Enemy description
 
-                // Automatically add ".png" to the sprite filename
-                spriteFileName = spriteFileName + ".png";
+                // Parse abilities from the 5th column (data[5]), separated by semicolons
+                string[] abilities = data[5].Split(';');
 
-                // Load the sprite from the Assets/Art/Sprites folder
-                Sprite enemySprite = LoadSprite(spriteFileName);
+                // Parse the baseType from column 6
+                string baseType = data[6];
 
-                // Create a new EnemyData ScriptableObject
-                EnemyData enemyData = ScriptableObject.CreateInstance<EnemyData>();
-                enemyData.enemyName = name;
-                enemyData.healthMax = healthMax;
-                enemyData.damage = damage;
-                enemyData.enemySprite = enemySprite;
+                // Load the sprite image
+                Sprite enemySprite = LoadSprite(spriteFileName + ".png");
+
+                // Create a new CharacterData ScriptableObject
+                CharacterData characterData= ScriptableObject.CreateInstance<CharacterData>();
+                characterData.charName = name;
+                characterData.Sprite = enemySprite;
+                characterData.baseStat = baseStat;
+                characterData.abilityLevel = abilityLevel;
+                characterData.description = description;
+                characterData.abilities = abilities;  // Assign the parsed abilities
+                characterData.baseType = baseType;    // Assign baseType
 
                 // Add the new enemy to the list
-                enemyList.Add(enemyData);
+                enemyList.Add(characterData);
             }
         }
 

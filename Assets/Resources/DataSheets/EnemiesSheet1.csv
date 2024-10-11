@@ -1,4 +1,27 @@
-NAME,HEALTHMAX,DAMAGE,IMAGE
-Slime,50,5,T_E_Slime
-Goblin,30,10,T_E_YoungGoblin
-Test,100,4,T_E_Test
+NAME,IMAGE,BASESTATS,ABILITY_LEVEL,DESCRIPTION,ABILITIES,BASETYPE
+Slime,T_E_Slime,STR,1,"A small, gelatinous creature that oozes through dungeons, corroding anything in its path. Often slow but dangerous due to its acidic nature.",Bash; Acid; Regen; LifeDrain; Paralyze;,Normal
+Goblin,T_E_YoungGoblin,DEX,1,"A small, cunning humanoid known for its trickery and ambush tactics. Goblins often attack in groups and are capable of basic strategy.",Slash; QuickStrike; Dodge; Throw; Bomb;,Normal
+Test,T_E_Test,INT,2,A monster that was created for testing pourposes but was kepts in the game because I thought he looked cool.,Punch,Magic
+Bat,T_E_Bat,DEX,0,"A small, winged creature that hunts in dark caves. They rely on echolocation and typically swarm their prey.",Bite; QuickStrike; Dodge;,Normal
+Spider,T_E_Spider,DEX,1,Small to large arachnid capable of trapping prey in webs and injecting venom.,Bite; Dodge; Poison; Paralyze;,Normal
+Rock Golem,T_E_RockGolem,STR,2,"A slow, heavy creature made from stone. It’s durable and can manipulate the earth around it.",Bash; Throw; Shield; Quake;,Armored
+Skeleton,T_E_Skeleton,STR,0,A mindless undead warrior reanimated to follow orders. It’s fragile but dangerous in numbers.,Bash; Regen;,Undead
+Fanatic,T_E_Fanatic,STR,1,"A zealot who fights with religious fervor, willing to sacrifice themselves for their cause.",Bash; Heal; Charge; SelfDestruct;,Normal
+Fresh Zombie,T_E_FreshZombie,DEX,1,"Recently risen from the dead, this adventurer still possess abilities it had before death.",Slash; Bite; Dodge; Heal; ,Undead
+Bandit,T_E_Bandit,DEX,1,"A human rogue who relies on theft, ambush, and underhanded tactics to survive in a dangerous world.",Slash; Dodge; Backstab; Steal;,Normal
+Young Dark Mage,T_E_YoungDarkMage,INT,2,"A novice practitioner of dark magic, dangerous but limited in their knowledge.",MagicMissible; DrainLife; Fear; Fireball;,Magic
+Fallen Paladin,T_E_FallenPaladin,STR,3,"Once a holy warrior, now corrupted, wielding dark powers that pervert their former divine strength.",Slash; Healing; Regen; Shield; DespairAura;,Armored
+Ghoul,T_E_Ghoul,STR,2,"A fast, flesh-eating undead that paralyzes its prey before feasting on them.",Bite; Scratch; Paralyze; Frenzy; LifeDrain;,Undead
+Wraith,T_E_Wraith,DEX,4,"An incorporeal undead spirit that haunts the living, feeding on their life force. It is difficult to harm without magic.",LifeDrain; Dodge; Poison; EtheralForm; Ice;,Undead
+Lich,T_E_Lich,INT,5,A powerful undead spellcaster who has achieved immortality by binding their soul to a phylactery. They command great magical powers and armies of the dead.,Fireball; Paralyze; Fear; LifeDrain; RaiseDead; Fire; Cold;,Undead / Magic
+Archer Skeleton,T_E_ArcherSkeleton,DEX,0,"A skeleton with a bow, providing long-range support for other undead minions.",Arrow; PoisonArrow; FlameArrow; Concentrate;,Armored / Undead
+Carrion Swarm,T_E_CarrionSwarm,STR,1,A mass of decaying insects or small creatures that feeds on corpses and spreads disease. It overwhelms enemies with sheer numbers.,Bite; Poison; LifeDrain; Rush;,Normal
+Dark Knight,T_E_DarkKnight,STR,4,"A powerful warrior clad in black armor, empowered by dark magic. It is a formidable foe, both physically and magically.",Slash; Frenzy; Ice; Shield; Regen;,Armored
+Giant Rat,T_E_GiantRat,DEX,0,"A large, diseased rodent that thrives in dark, damp places. It is fast and capable of overwhelming enemies with numbers.",Bite; Scratch;,Normal
+Giant Roach,T_E_GiantRoach,DEX,0,"A large, disgusting insect that can survive in the filthiest environments. It is hardy and difficult to kill.",Bite; Dodge; Poison; Shield;,Normal
+Imp,T_E_Imp,DEX,2,"A small, mischievous demon that serves more powerful fiends. It is capable of using minor magic and prefers to attack from a distance or using tricks.",Slash; Fire; MagicMissile; Invisibility; Summon;,Normal / Magic
+Mimic,T_E_Mimic,STR,1,A shape-shifting creature that disguises itself as treasure or furniture to ambush unsuspecting adventurers. It’s highly dangerous due to its ability to surprise and latch onto enemies.,Bite; Paralyze; Acid; Confusion;,Normal / Magic
+Shadow,T_E_Shadow,INT,2,"A malevolent, incorporeal creature of darkness that drains the strength of the living. It lurks in the shadows, striking fear into the hearts of those it touches.",LifeDrain; StrengthDrain; Fear; Dodge; EtheralForm;,Magic
+Warrior Skeleton,T_E_WarriorSkeleton,STR,1,"A reanimated skeleton equipped with weapons and armor, skilled in melee combat.",Slash; Shield; ,Undead / Armored
+Wisp,T_E_Wisp,INT,2,"A floating, glowing orb of energy that often lures adventurers to danger. It has limited offensive capability but can confuse and mislead enemies.",Shock; ManaDrain; Heal; ,Magic
+Zombie,T_E_Zombie,STR,0,"A mindless, shambling undead that seeks to consume the living. It is slow but difficult to kill due to its undead nature.",Bite; Scratch; Poison;,Undead

@@ -9,6 +9,11 @@ TagManager:
   - DialogueText
   - DontDestroyOnLoad
   - GameManager
+  - ActionsList
+  - ContentPanel
+  - EnemyHUD
+  - PlayerHUD
+  - CombatManager
   layers:
   - Default
   - TransparentFX

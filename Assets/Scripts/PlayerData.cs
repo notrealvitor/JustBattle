@@ -1,19 +1,32 @@
+using UnityEngine;
+
 [System.Serializable]
-public class PlayerSaveData
+public class PlayerData
 {
-    public int health;
-    public int maxHealth;
     public int experience;
     public int gold;
     public int numberOfFights;
+    public CharacterData playerCharacterData;
 
-    // Add other attributes like mana, cooldown, etc. later as needed
-    public PlayerSaveData(int health, int maxHealth, int experience, int gold, int NumberOfFights)
+    public PlayerData(int experience, int gold, int NumberOfFights, CharacterData playerCharacterData)
     {
-        this.health = health;
-        this.maxHealth = maxHealth;
         this.experience = experience;
         this.gold = gold;
         this.numberOfFights = 0;
+        this.playerCharacterData = playerCharacterData;
     }
+
+
+    // Getter and Setter for Strength
+    public int GetStrength() => playerCharacterData.strength;
+    public void SetStrength(int value) => playerCharacterData.strength = value;
+
+    // Getter and Setter for Dexterity
+    public int GetDexterity() => playerCharacterData.dexterity;
+    public void SetDexterity(int value) => playerCharacterData.dexterity = value;
+
+    // Getter and Setter for Intelligence
+    public int GetIntelligence() => playerCharacterData.intelligence;
+    public void SetIntelligence(int value) => playerCharacterData.intelligence = value;
+
 }
