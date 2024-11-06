@@ -165,7 +165,7 @@ public class GameManager : MonoBehaviour
     public void LoadGame()
     {
         playerSaveData = SaveSystem.LoadFromFile();
-        Debug.Log("loading game!");
+        //Debug.Log("loading game!");
         if (playerSaveData != null)
         {
             ApplySaveDataToCharacter();

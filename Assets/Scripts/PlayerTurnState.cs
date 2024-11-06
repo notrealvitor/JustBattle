@@ -10,7 +10,7 @@ public class PlayerTurnState : BattleState
 
     public override void EnterState()
     {
-        Debug.Log("EnterState PlayerTurn");
+        //Debug.Log("EnterState PlayerTurn");
         // Display the player's turn message
         BattleTextManager.Instance.DisplayMessage("Your turn! Choose an action.");
 

@@ -24,7 +24,7 @@ public class EnemyTurnState : BattleState
         combatManager.PerformAttack(
             combatManager.enemyStatus,  // Attacker
             combatManager.playerStatus, // Target
-            $"{combatManager.enemyStatus.characterName} attacksxx!",  // Attack message
+            $"{combatManager.enemyStatus.characterName} attacks!",  // Attack message
             () =>
             {
                 // Callback after the attack: Check if player is dead or continue to the player's turn

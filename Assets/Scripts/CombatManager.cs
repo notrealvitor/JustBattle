@@ -242,7 +242,7 @@ public class CombatManager : MonoBehaviour
     {
         currentState = newState;
         currentState.EnterState();
-        print("current state of battle " +currentState);
+        //print("current state of battle " +currentState);
     }
 
     public IEnumerator LoadSceneAndPerformAction(string sceneName, Action afterSceneLoadAction)

@@ -15,7 +15,6 @@ public class ConditionalDestroyer : MonoBehaviour
     // Function to check the condition and destroy the GameObject if the condition matches
     public void CheckAndDestroy()
     {
-        print("checking");
         if (!string.IsNullOrEmpty(className) && !string.IsNullOrEmpty(methodName))
         {
             // Find the class type by name
@@ -33,12 +32,13 @@ public class ConditionalDestroyer : MonoBehaviour
 
                     if (condition == destroyIfTrue)
                     {
+                        Debug.Log("GameObject " + gameObject.name + " destroyed based on condition.");
                         Destroy(gameObject);
-                        Debug.Log("GameObject destroyed based on condition.");
+                        
                     }
                     else
                     {
-                        Debug.Log("Condition not met, GameObject not destroyed.");
+                        Debug.Log("Condition not met, GameObject " + gameObject.name + " not destroyed.");
                     }
                 }
                 else

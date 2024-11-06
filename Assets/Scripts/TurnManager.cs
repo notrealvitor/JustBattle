@@ -16,7 +16,7 @@ public class TurnManager : ScriptableObject
         combatManager = FindObjectOfType<CombatManager>();
         allCharacters = new List<CharacterStatus>(FindObjectsOfType<CharacterStatus>());
         ResetAllSpeeds();
-        Debug.Log("start turn manager");
+        //Debug.Log("start turn manager");
     }
 
     void ResetAllSpeeds()
@@ -30,7 +30,7 @@ public class TurnManager : ScriptableObject
 
     public void NextTurn()
     {
-        Debug.Log("called NextTurn");
+        //Debug.Log("called NextTurn");
         // Keep increasing speed until a character has enough speed to act (speed >= 3)
         while (true)
         {
@@ -63,12 +63,12 @@ public class TurnManager : ScriptableObject
                 {
 
                     combatManager.SetState(new PlayerTurnState(combatManager));
-                    Debug.Log("Player turn selected!");
+                   //Debug.Log("Player turn selected!");
                 }
                 else
                 {
                     combatManager.SetState(new EnemyTurnState(combatManager));
-                    Debug.Log("Enemy turn selected!");
+                    //Debug.Log("Enemy turn selected!");
                 }
 
                 // Reduce the speed of the acting character by 3 (reset after action) // this should be done after calling a skill but we can leave here for now

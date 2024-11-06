@@ -134,8 +134,7 @@ public class CharacterStatus : MonoBehaviour
             //speedMax = CalculateStat(characterData.dexterity, characterData.level, 1.5f);
             speed = speedMax;
 
-            print(gameObject.name + "stats is: STR " + characterData.strength + " DEX " + characterData.dexterity + " INT " + characterData.intelligence);
-            print(gameObject.name + " healthMAX: " + healthMax + " DMG: " + damage + " SPD " + speed);
+            print(gameObject.name + " Dice Rolls/Size: "+ DiceRolls + "/" + DiceSize + " STATS: STR " + characterData.strength + " DEX " + characterData.dexterity + " INT " + characterData.intelligence + " // healthMAX: " + healthMax + " DMG: " + damage + " SPD " + speed);
             charCharacterData = characterData;
         }
         else
